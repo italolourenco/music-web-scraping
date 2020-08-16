@@ -67,7 +67,7 @@ function setupMusicName(text){
   for(const name of musicNameSplit){
     if(name !== ''){
       const nameText = removeSpecialCharacters(name)
-      musicName = musicName === undefined ? nameText : nameText + '-' + data
+      musicName = musicName === undefined ? nameText : musicName + '-' + nameText
     }
   }
 
@@ -81,7 +81,7 @@ function createMusicInfo(musicData){
   musicName = setupMusicName(musicSplitData[0])
 
   const artistName = normalizeText(musicSplitData[1])
-  name = normalizeText(name)
+  name = normalizeText(musicName)
 
   const musicInfo = {
     artistName: artistName,
@@ -91,7 +91,6 @@ function createMusicInfo(musicData){
   return musicInfo
 
 }
-
 
 function makeVagalumeApiUrl(musicData){
 
@@ -167,7 +166,7 @@ async function googleSearch(param){
 async function vagalumeApiMusicSearch(param){
 
   const url = makeVagalumeApiUrl(param)
-
+  
   const musicInfo = param.replace(/ /g, '').split('–')
 
     const options = {
@@ -237,9 +236,7 @@ async function run() {
         if(musicResultSearch.searchStatus === 'requestError'){
           console.log("Get Music")
           const newTextSearch = await googleSearch(music.textContent)
-  
-          console.log(newTextSearch)
-  
+
           if(newTextSearch){
             musicResultSearch.textMusic = newTextSearch.music[0].replace(/(\r\n|\n|\r)/gm, " ")
             musicResultSearch.searchStatus = "GoogleSearch OK"
@@ -261,6 +258,7 @@ async function run() {
 
     return
   
+
 }
 
 run()
