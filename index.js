@@ -46,37 +46,61 @@ const links = [
 
 const apiKey = 'dc668952146a4a25b6d06586e7b69708'
 
-function makeVagalumeApiUrl(sitePath, musicData){
 
-  const vagalumeApiPath = "https://api.vagalume.com.br/search.php"
+function normalizeText(text){
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+}
 
-  const musicInfo = musicData.split('–')
+function setupMusicName(text){
 
-  const musicName = musicInfo[0]
-  const nameData = musicName.split(' ')
+  const nameData = text.split(' ')
 
-  let name = undefined
+  let musicName = undefined
 
   if(nameData.length > 2){
     for(const data of nameData){
       if(data !== '') {
-        if(name === undefined){
-          name = data.replace(",", "").replace("`", "").replace("’", "")
+        if(musicName === undefined){
+          musicName = data.replace(",", "").replace("`", "").replace("’", "")
         }else {
-          name = name + '-' + data.replace(",", "").replace("`", "").replace("’", "");
+          musicName = name + '-' + data.replace(",", "").replace("`", "").replace("’", "");
         }
       } 
     }
   }
   else{
-    name = nameData[0]
+    musicName = nameData[0]
+  }
+}
+
+function createMusicInfo(musicData){
+
+  const musicSplitData = musicData.split('–')
+
+  musicName = setupMusicName(musicSplitData[0])
+
+  const artistName = normalizeText(musicSplitData[1])
+  name = normalizeText(name)
+
+  const musicInfo = {
+    artistName: artistName,
+    name: name
   }
 
-  const artistName = musicInfo[1].normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-  name = name.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+  return musicInfo
 
-  console.log(musicInfo)
-  return `${sitePath}?art=${artistName}&mus=${name}&apikey=${apiKey}`
+}
+
+
+function makeVagalumeApiUrl(musicData){
+
+  const vagalumeApiPath = "https://api.vagalume.com.br/search.php"
+
+  const musicInfo = createMusicInfo(musicData)
+
+  const url = `${vagalumeApiPath}?art=${musicInfo.artistName}&mus=${musicInfo.name}&apikey=${apiKey}`
+
+  return url
 
 }
 
