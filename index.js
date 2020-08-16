@@ -19,6 +19,10 @@ function removeSpecialCharacters(text){
   return text.replace(",", "").replace("`", "").replace("’", "")
 }
 
+function formatText(text){
+  return text.replace(/(\r\n|\n|\r)/gm, " ")
+}
+
 function setupMusicName(text){
 
   const musicNameSplit = text.split(' ')
@@ -129,19 +133,12 @@ async function googleSearch(param){
       })
     })
 
-  
     browser.close()
     return {music : text, lang: lang}
-
-
 
   }catch (error) {
     return undefined
   }
-}
-
-function formatText(text){
-  return text.replace(/(\r\n|\n|\r)/gm, " ")
 }
 
 async function vagalumeApiMusicSearch(musicData){
@@ -195,7 +192,6 @@ async function generateReport(musics, year) {
     })
   })
 }
-
 
 async function getMusicList(link){
 
