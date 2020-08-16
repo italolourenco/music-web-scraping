@@ -46,8 +46,10 @@ const links = [
 
 const apiKey = 'dc668952146a4a25b6d06586e7b69708'
 
-function urlNormalize(sitePath, musicData){
-  console.log(musicData)
+function makeVagalumeApiUrl(sitePath, musicData){
+
+  const vagalumeApiPath = "https://api.vagalume.com.br/search.php"
+
   const musicInfo = musicData.split('–')
 
   const musicName = musicInfo[0]
@@ -115,8 +117,6 @@ async function googleSearch(param){
 
   const url = googleSearchUrl(param)
 
-  console.log(url)
-
   try {
 
     const browser = await puppeteer.launch({ headless:true, args: ['--start-maximized']})
@@ -162,9 +162,7 @@ async function googleSearch(param){
 
 async function vagalumeApiMusicSearch(param){
 
-  const vagalumeApiPath = "https://api.vagalume.com.br/search.php"
-
-  const url = urlNormalize(vagalumeApiPath, param)
+  const url = makeVagalumeApiUrl(param)
 
   const musicInfo = param.replace(/ /g, '').split('–')
 
