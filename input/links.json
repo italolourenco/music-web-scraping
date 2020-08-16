@@ -1,0 +1,32 @@
+[
+    {
+       "year":60,
+       "link":"https://maistocadas.mus.br/anos-60/",
+       "selector":"#post-10214 > div > section > div.lista > ol"
+    },
+    {
+       "year":70,
+       "link":"https://maistocadas.mus.br/anos-70/",
+       "selector":"#post-9579 > div > section > div.lista > ol"
+    },
+    {
+       "year":80,
+       "link":"https://maistocadas.mus.br/anos-80/",
+       "selector":"#post-4345 > div > section > div.lista > ol"
+    },
+    {
+       "year":90,
+       "link":"https://maistocadas.mus.br/anos-90/",
+       "selector":"#post-9316 > div > section > div.lista > ol"
+    },
+    {
+       "year":2000,
+       "link":"https://maistocadas.mus.br/anos-2000/",
+       "selector":"#post-10185 > div > section > div.lista > ol"
+    },
+    {
+       "year":2010,
+       "link":"https://maistocadas.mus.br/anos-2010/",
+       "selector":"#post-17160 > div > section > div.lista > ol"
+    }
+ ]
