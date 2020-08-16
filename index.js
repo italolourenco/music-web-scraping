@@ -1,5 +1,4 @@
 const rp = require('request-promise')
-const utf8 = require('utf8');
 const fs = require('fs');
 const sleep = require('util').promisify(setTimeout)
 
@@ -46,7 +45,6 @@ const links = [
 
 const apiKey = 'dc668952146a4a25b6d06586e7b69708'
 
-
 function normalizeText(text){
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 }
@@ -71,6 +69,8 @@ function setupMusicName(text){
   else{
     musicName = nameData[0]
   }
+
+  return musicName
 }
 
 function createMusicInfo(musicData){
@@ -104,42 +104,21 @@ function makeVagalumeApiUrl(musicData){
 
 }
 
-function googleSearchUrl(param){
+function makeGoogleSearchUrl(musicData){
 
-  const sitePath = "https://www.google.com/search?q="
+  const googleSearchUrl = "https://www.google.com/search?q="
 
-  const musicInfo = param.split('–')
+  const musicInfo = createMusicInfo(musicData)
 
-  const musicName = musicInfo[0]
-  const nameData = musicName.split(' ')
+  const url = `${googleSearchUrl}${musicInfo.artistName}${musicInfo.name}`
 
-  let name = undefined
-
-  if(nameData.length > 2){
-    for(const data of nameData){
-      if(data !== '') {
-        if(name === undefined){
-          name = data.replace(",", "").replace("`", "").replace("’", "")
-        }else {
-          name = name + '-' + data.replace(",", "").replace("`", "").replace("’", "");
-        }
-      } 
-    }
-  }
-  else{
-    name = nameData[0]
-  }
-
-  const artistName = musicInfo[1].normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-  name = name.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-
-  return `${sitePath}${artistName}${name}`
+  return url
 
 }
 
 async function googleSearch(param){
 
-  const url = googleSearchUrl(param)
+  const url = makeGoogleSearchUrl(param)
 
   try {
 
