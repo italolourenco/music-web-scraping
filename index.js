@@ -74,13 +74,24 @@ function setupMusicName(text){
   return musicName
 }
 
+function createMusicData(musicContext){
+
+  const splitMusicContext = musicContext.split('-')
+
+  const musicData = {
+    name = splitMusicContext[0],
+    artist = splitMusicContext[1],
+    year = splitMusicContext[2]
+  }
+
+  return musicData
+}
+
 function createMusicInfo(musicData){
 
-  const musicSplitData = musicData.split('–')
+  musicName = setupMusicName(musicData.name)
 
-  musicName = setupMusicName(musicSplitData[0])
-
-  const artistName = normalizeText(musicSplitData[1])
+  const artistName = normalizeText(musicData.artist)
   name = normalizeText(musicName)
 
   const musicInfo = {
@@ -163,27 +174,36 @@ async function googleSearch(param){
   }
 }
 
-async function vagalumeApiMusicSearch(param){
+function formatText(text){
+  return text.replace(/(\r\n|\n|\r)/gm, " ")
+}
 
-  const url = makeVagalumeApiUrl(param)
-  
-  const musicInfo = param.replace(/ /g, '').split('–')
+async function vagalumeApiMusicSearch(musicData){
 
-    const options = {
-        uri: url
-      }
+  const url = makeVagalumeApiUrl(musicData)
 
-        try {
-          await sleep(1500)
-          const response = await rp(options);
-          const responseData = JSON.parse(response)
-          const musicText = (responseData.type === 'exact' || responseData.type === 'aprox') ? responseData.mus[0].text.replace(/(\r\n|\n|\r)/gm, " ") : undefined
-          const musicLang = responseData.mus[0].lang === 1 ? "PT-BR" : "EN-US"
-          return {name: musicInfo[0], artist: musicInfo[1], textMusic: musicText, lang: musicLang, musicUrl: url, searchStatus: responseData.type}
-        } catch(error) {
-          return {name: musicInfo[0], artist: musicInfo[1], textMusic: undefined, lang: undefined, musicUrl: url, searchStatus: 'requestError'}
-  
-        }
+  const apiVagalumeMusicResult = { 
+    name: musicData.name, 
+    artist: musicData.artist, 
+    textMusic: '', 
+    lang: '', 
+    musicUrl: url, 
+    searchStatus: 'initialSearch' }
+
+  try {
+    await sleep(1500)
+    const response = await rp({ uri: url })
+    const responseData = JSON.parse(response)
+
+    apiVagalumeMusicResult.textMusic = (responseData.type === 'exact' || responseData.type === 'aprox') ? formatText(responseData.mus[0].text) : '-'
+    apiVagalumeMusicResult.lang = responseData.mus[0].lang === 1 ? "PT-BR" : "EN-US"
+    apiVagalumeMusicResult.searchStatus = 'OK'
+    return apiVagalumeMusicResult
+    } 
+    catch(error) {
+      apiVagalumeMusicResult.searchStatus = 'vagalumeAPiError'
+      return apiVagalumeMusicResult
+    }
 }
 
 async function generateReport(musics, year) {
@@ -223,42 +243,54 @@ async function getMusicList(link){
   return musics
 }
 
+function getMusicWithGoogle(musicData){
+  
+  const googleSearchMusicResult = {
+    textMusic: '',
+    lang: '',
+    searchStatus: 'ERROR'
+  }
+
+  const newTextSearch = await googleSearch(musicData)
+
+  if(!newTextSearch){
+    return googleSearchMusicResult
+  }
+
+  googleSearchMusicResult.textMusic = formatText(newTextSearch.music[0])
+  googleSearchMusicResult.lang = newTextSearch.lang[0] === 'pt-BR' ? "PT-BR" : "EN-US"
+  googleSearchMusicResult.searchStatus = "OK"
+
+  return googleSearchMusicResult
+}
+
 async function run() {
 
     for(const link of links) {
 
-      const musics = await getMusicList(link)
       const musicsToSave = []
+      const musics = await getMusicList(link)
 
       for(const music of musics) {
-        const musicResultSearch = await vagalumeApiMusicSearch(music.textContent)
-  
-        if(musicResultSearch.searchStatus === 'requestError'){
-          console.log("Get Music")
-          const newTextSearch = await googleSearch(music.textContent)
 
-          if(newTextSearch){
-            musicResultSearch.textMusic = newTextSearch.music[0].replace(/(\r\n|\n|\r)/gm, " ")
-            musicResultSearch.searchStatus = "GoogleSearch OK"
-            musicResultSearch.lang = newTextSearch.lang[0] === 'pt-BR' ? "PT-BR" : "EN-US"
-          }
-          else {
-            musicResultSearch.searchStatus = "GoogleSearch ERROR"
+        const musicData = createMusicData(music.textContent)
+        const musicResult = await vagalumeApiMusicSearch(musicData)
+  
+        if(musicResult.searchStatus === 'vagalumeAPiError'){
+          const googleSearchMusicResult = getMusicWithGoogle(musicData)
+
+          if(googleSearchMusicResult?.searchStatus === 'OK'){
+            musicResult.textMusic = googleSearchMusicResult.textMusic
+            musicResult.lang = googleSearchMusicResult.lang
+            musicResult.searchStatus = googleSearchMusicResult.searchStatus
           }
         }
-  
-  
-        if(musicResultSearch.lang === "PT-BR"){
-          musicsToSave.push(musicResultSearch)
-        }
+
+        if(musicResult.lang === "PT-BR") musicsToSave.push(musicResult)
       }
-  
       await generateReport(musicsToSave, link.year)
     }
-
     return
-  
-
 }
 
 run()
