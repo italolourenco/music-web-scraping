@@ -49,25 +49,25 @@ function normalizeText(text){
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 }
 
+function removeSpecialCharacters(text){
+  return text.replace(",", "").replace("`", "").replace("’", "")
+}
+
 function setupMusicName(text){
 
-  const nameData = text.split(' ')
+  const musicNameSplit = text.split(' ')
 
   let musicName = undefined
 
-  if(nameData.length > 2){
-    for(const data of nameData){
-      if(data !== '') {
-        if(musicName === undefined){
-          musicName = data.replace(",", "").replace("`", "").replace("’", "")
-        }else {
-          musicName = name + '-' + data.replace(",", "").replace("`", "").replace("’", "");
-        }
-      } 
-    }
+  if(!musicNameSplit.length > 2) {
+    musicName = musicNameSplit[0]
+    return musicName
   }
-  else{
-    musicName = nameData[0]
+
+  for(const name of musicNameSplit){
+    if(name !== ''){
+      const nameText = removeSpecialCharacters(name)
+      musicName = musicName === undefined ? nameText : musicName + '-' + nameText
   }
 
   return musicName
