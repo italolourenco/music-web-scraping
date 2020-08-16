@@ -67,7 +67,8 @@ function setupMusicName(text){
   for(const name of musicNameSplit){
     if(name !== ''){
       const nameText = removeSpecialCharacters(name)
-      musicName = musicName === undefined ? nameText : musicName + '-' + nameText
+      musicName = musicName === undefined ? nameText : nameText + '-' + data
+    }
   }
 
   return musicName
