@@ -160,11 +160,11 @@ async function googleSearch(param){
   }
 }
 
-async function musicSearch(param){
+async function vagalumeApiMusicSearch(param){
 
-  const sitePath = "https://api.vagalume.com.br/search.php"
+  const vagalumeApiPath = "https://api.vagalume.com.br/search.php"
 
-  const url = urlNormalize(sitePath, param)
+  const url = urlNormalize(vagalumeApiPath, param)
 
   const musicInfo = param.replace(/ /g, '').split('–')
 
@@ -230,7 +230,7 @@ async function run() {
       const musicsToSave = []
 
       for(const music of musics) {
-        const musicResultSearch = await musicSearch(music.textContent)
+        const musicResultSearch = await vagalumeApiMusicSearch(music.textContent)
   
         if(musicResultSearch.searchStatus === 'requestError'){
           console.log("Get Music")
