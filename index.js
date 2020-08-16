@@ -9,40 +9,6 @@ puppeteer.use(pluginStealth())
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom
 
-
-const links = [
-  {
-    year: 60,
-    link: 'https://maistocadas.mus.br/anos-60/',
-    selector: '#post-10214 > div > section > div.lista > ol'
-  }, 
-  {
-    year: 70,
-    link: 'https://maistocadas.mus.br/anos-70/',
-    selector: '#post-9579 > div > section > div.lista > ol'
-  },
-  {
-    year: 80,
-    link: 'https://maistocadas.mus.br/anos-80/',
-    selector: '#post-4345 > div > section > div.lista > ol'
-  },
-  {
-    year: 90,
-    link: 'https://maistocadas.mus.br/anos-90/',
-    selector: '#post-9316 > div > section > div.lista > ol'
-  },
-  {
-    year: 2000,
-    link: 'https://maistocadas.mus.br/anos-2000/',
-    selector: '#post-10185 > div > section > div.lista > ol'
-  },
-  {
-    year: 2010,
-    link: 'https://maistocadas.mus.br/anos-2010/',
-    selector: '#post-17160 > div > section > div.lista > ol'
-  }
-]
-
 const apiKey = 'dc668952146a4a25b6d06586e7b69708'
 
 function normalizeText(text){
@@ -79,9 +45,9 @@ function createMusicData(musicContext){
   const splitMusicContext = musicContext.split('-')
 
   const musicData = {
-    name = splitMusicContext[0],
-    artist = splitMusicContext[1],
-    year = splitMusicContext[2]
+    name : splitMusicContext[0],
+    artist : splitMusicContext[1],
+    year : splitMusicContext[2]
   }
 
   return musicData
@@ -243,7 +209,7 @@ async function getMusicList(link){
   return musics
 }
 
-function getMusicWithGoogle(musicData){
+async function getMusicWithGoogle(musicData){
   
   const googleSearchMusicResult = {
     textMusic: '',
@@ -266,7 +232,9 @@ function getMusicWithGoogle(musicData){
 
 async function run() {
 
-    for(const link of links) {
+  const linksData = require("./input/links.json")
+
+    for(const link of linksData) {
 
       const musicsToSave = []
       const musics = await getMusicList(link)
