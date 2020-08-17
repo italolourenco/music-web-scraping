@@ -166,7 +166,7 @@ async function vagalumeApiMusicSearch(musicData){
     apiVagalumeMusicResult.searchStatus = 'OK'
     return apiVagalumeMusicResult
     } 
-    
+
     catch(error) {
       apiVagalumeMusicResult.searchStatus = 'vagalumeAPiError'
       return apiVagalumeMusicResult
@@ -217,14 +217,14 @@ async function getMusicWithGoogle(musicData){
     searchStatus: 'ERROR'
   }
 
-  const newTextSearch = await googleSearch(musicData)
+  const result = await googleSearch(musicData)
 
-  if(!newTextSearch){
+  if(!result){
     return googleSearchMusicResult
   }
 
-  googleSearchMusicResult.textMusic = formatText(newTextSearch.music[0])
-  googleSearchMusicResult.lang = newTextSearch.lang[0] === 'pt-BR' ? "PT-BR" : "EN-US"
+  googleSearchMusicResult.textMusic = formatText(result.music[0])
+  googleSearchMusicResult.lang = result.lang[0] === 'pt-BR' ? "PT-BR" : "EN-US"
   googleSearchMusicResult.searchStatus = "OK"
 
   return googleSearchMusicResult
