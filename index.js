@@ -158,11 +158,15 @@ async function vagalumeApiMusicSearch(musicData){
     const response = await rp({ uri: url })
     const responseData = JSON.parse(response)
 
-    apiVagalumeMusicResult.textMusic = (responseData.type === 'exact' || responseData.type === 'aprox') ? formatText(responseData.mus[0].text) : '-'
+    apiVagalumeMusicResult.textMusic = (responseData.type === 'exact' || responseData.type === 'aprox') 
+    ? formatText(responseData.mus[0].text) 
+    : '-'
+
     apiVagalumeMusicResult.lang = responseData.mus[0].lang === 1 ? "PT-BR" : "EN-US"
     apiVagalumeMusicResult.searchStatus = 'OK'
     return apiVagalumeMusicResult
     } 
+    
     catch(error) {
       apiVagalumeMusicResult.searchStatus = 'vagalumeAPiError'
       return apiVagalumeMusicResult
